@@ -45,3 +45,13 @@ Stop/retire flags do not cancel native transfers. The provider must define compl
 ## How to help
 
 Reply in [issue #1](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues/1) with platform/version, relevant prototype or a link to shareable documentation, handle origin and lifetime/completion rules. For a code correction, identify the file, failing condition and a minimal reproducer. Hardware deployment is outside this sample's validation scope.
+
+## Current integration boundary
+
+The application build target is Windows CE / eVC4 MIPSII. Runtime diagnostics also identify a kernel-resident USBware module and a CE6 kernel context. A matching version string alone does not establish the native module's ABI or calling context. `jipod` names the owner/client path under investigation, not a verified standalone process.
+
+The immediate missing link is an application/service-callable boundary to the live owner, with a device lifetime guarantee established before the first pointer access. A function located inside firmware is not automatically callable from an EXE. We also need actual transferred length and cancellation/drain semantics on timeout and detach.
+
+A compatible SDK is useful but is not the only possible contribution: a documented existing broker, a supported owner extension point, or a concrete counterexample to an integration assumption can also help. Please distinguish target evidence from TI DSP/BIOS references, Microsoft USB_FUNCS shims, BSD headers and Jungo WinDriver WDU APIs; these are not interchangeable implementations.
+
+The complete path still includes role-switch completion, OEM function-side support, iAP2/identity/authentication, NCM and IP before an authenticated media session. One successful QUERY would close only the first control-transfer milestone.
