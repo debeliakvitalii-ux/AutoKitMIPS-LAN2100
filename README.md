@@ -1,100 +1,111 @@
 # AutoKitMIPS — LAN2100
 
-**Експериментальний проєкт AutoKitMIPS для штатної магнітоли LAN2100 на Windows CE 5.0 / MIPSII.**
+**Експериментальний проєкт для штатної магнітоли LAN2100 на Windows CE 5.0 / MIPSII.** Мета — автономна робота програми з реальним USB-транспортом до Carlinkit і подальшою інтеграцією CarPlay.
 
-Мета — довести програму до реального USB-транспорту й подальшої роботи з адаптером CarPlay. Шукаємо учасників із досвідом Windows CE, MIPS, Jungo USBware та вбудованих USB host-драйверів.
+[English](#english) · [P0: відновлення робочої бази](../../issues/2) · [P1: реальний USB provider](../../issues/1)
 
-**Поточний стан:** перевірений пакет вихідного коду існує; підтвердженого фізичного USB QUERY та готового USB-тестового EXE для цього пакета ще немає. Приймання вихідного коду або успішний тест на ПК не означає роботу на магнітолі.
+## Поточний пріоритет — відновити робочу програму
 
-[English version](#english)
+**Оновлено 22 жовтня 2026 року за COORD v21, A v68, B v73 і C v70.**
 
-## Найважливіша допомога
+Власник повідомив про проблеми відкриття/компіляції та роботи нової експериментальної версії. Ручну QUERY-кнопку відхилено. A65/A66 більше не використовуються як активна база відновлення.
 
-Потрібен реалізовний зв’язок між програмою та USB-пристроєм, яким уже володіє штатний Jungo USBware. Ще одна обгортка з callback-функціями цю прогалину не закриває.
+Потрібно повернути останню підтверджену робочу поведінку: запуск програми, штатні MGR1/UWD1, OEM receive/session і локальне відео. **Відновлення цієї поведінки не означає готовий CarPlay або фізичний Apple EP0.**
 
-| Параметр | Підтверджений контекст |
+| Напрям | Фактичний стан |
 | --- | --- |
-| Платформа | LAN2100, Windows CE 5.0, MIPSII; OEM target LGE_AU1350_YN |
-| Досліджений host stack | Jungo USBware HOST 3.5.14.64, OEM GEN15 production update 8.2.6 |
-| Обраний напрям | Робота через поточного штатного власника USB, без конкуруючого HCD |
-| Відсутній компонент | Відповідний цій збірці application-facing EP0 API/service або достатні вихідні матеріали для його реалізації |
-| Перший цільовий запит | Control IN: `C0 53 00 00 00 00 04 00` |
-| Критерій відповіді | Реальне terminal OK, actual_length = 4, отримані байти `01 00 00 00` |
+| Історична REV26 | Є журнал запуску на магнітолі та локального H.264: 86/86 кадрів, без помилок відображення |
+| Оригінальний ZIP REV26 | Точні байти потрібного архіву ще не автентифіковані/не відновлені |
+| Новий пакет відновлення | Не доставлений і не прийнятий |
+| Нова цільова збірка / HU-тест | Не виконані для відновленого пакета |
+| A65/A66 з ручною кнопкою | Відкликані як активна база випуску; історичні source-review висновки збережені |
+| Реальний USB provider | Відповідний OEM same-owner EP0 інтерфейс досі відсутній |
+| Receiver / NTP / H.264 integration | Паралельна робота після P0; не умова відновлення старого запуску |
 
-Дослідження виконані на образі оновлення. Його відповідність байт у байт поточній системі на конкретній магнітолі не встановлена.
+## P0 — допомогти відновити точний REV26
 
-Корисний внесок для USB — один із таких:
+[Відкрите завдання №2](../../issues/2)
 
-- Документація та реалізація інтерфейсу саме USBware HOST 3.5.14.64 / CE5 / MIPSII: header разом із відповідною бібліотекою, service/export/IPC contract або вихідним кодом.
-- Матеріали OEM/Jungo, які пояснюють реєстрацію host-клієнта, отримання device context, attach/detach, completion, timeout, cancel та завершення callback перед звільненням ресурсів.
-- Відтворюваний аналіз нового відповідного артефакту, який встановлює конкретний виклик і справжнє походження owner/device handle.
+Потрібен оригінальний архів із SHA-256:
 
-Для кожного матеріалу вкажіть версію, походження, назву файла та SHA-256. Поширюйте лише матеріали, на передачу яких маєте право. Один header без відповідної реалізації або підтвердженого ABI не закриває залежність.
+```text
+7c437e9dc066640174ba5c6a4838a848ccb8b0f14476ea5f9b27315861288bb9
+```
 
-## Коротка карта проєкту
+Історична назва: `AutoKitMIPS_v22.8.114_U_LOCAL_H264_SOFTWARE_EXPERIMENTAL.zip`.
+**Назва не визначає ревізію:** знайдені однойменні архіви REV24 і REV28 мають інші хеші й не є REV26.
 
-Це функціональні частини, а не твердження про вже активований наскрізний шлях.
+Якщо ви зберегли оригінальний пакет, повідомте його SHA-256 та походження у завданні №2. Не перебудовуйте REV26 з іншої ревізії і не змінюйте файл хешу, щоб він «збігався».
 
-| Частина | Стан / потрібна робота |
+Після отримання правильного оригіналу потрібні:
+
+1. Збереження справжнього дерева `AutoKitMIPS_U`, workspace/project і штатної поведінки без додавання експериментальних модулів.
+2. Відсутність ручної кнопки ID 3009 та активного `AutoKitManualUsbQuery.cpp`.
+3. Відтворювана збірка у відповідному Windows/eVC4/CE5 MIPSII середовищі: точний SDK, конфігурація, журнал компілятора/лінкера, SHA вихідного архіву й нового EXE.
+4. Окремо узгоджена перевірка поведінки на магнітолі.
+
+Історичний запис про USER_BUILD_PASS збережено, але C70 не отримав новий raw compiler/link transcript або точну прив’язку EXE до відновленого пакета. Старий HU-журнал доводить історичну поведінку; він не є новим тестом відновлення.
+
+Якщо REV26 недоступна, інша база може розглядатися лише як **окремий кандидат із власними доказами**, а не як перейменована REV26.
+
+## P1 — реальний автономний USB-транспорт
+
+[Відкрите завдання №1](../../issues/1)
+
+Потрібен реалізовний зв’язок із USB-пристроєм через чинного штатного власника. Зберігаємо UWD1/MGR1 та OEM message registration.
+
+| Параметр | Ціль |
 | --- | --- |
-| AutoKitMIPS_U, основна програма | Є повний EXPERIMENTAL source package |
-| Ручний QUERY-вхід | A64 доставив source-only функцію та owner-release корекцію; незалежне приймання очікується, активний VCP не змінено |
-| Фізичний USB provider | Основна відкрита залежність, описана вище |
-| Owner / generation / drain | Коректність при від’єднанні, timeout і одночасному завершенні |
-| Receiver / NTP / H.264 | B68 узгодив одну C-прийняту NTP-реалізацію; зовнішній lifetime receiver ще потребує інтеграції. Не залежність першого QUERY |
-| CE5 MIPSII build | Потрібен справжній результат eVC4/CLMIPS для актуальних змін |
-| Тест на магнітолі | Окремий етап після підготовки конкретного пакета |
+| Платформа | LAN2100, Windows CE 5.0, MIPSII, OEM target LGE_AU1350_YN |
+| Досліджений stack | Jungo USBware HOST 3.5.14.64, OEM GEN15 production update 8.2.6 |
+| Власник USB | Штатний `jipod` / USBware |
+| Потрібний компонент | Відповідний збірці app-callable EP0 service або broker усередині поточного owner |
+| Початковий control IN | `C0 53 00 00 00 00 04 00` |
+| Критерій успіху | Реальне terminal OK, actual_length = 4, отримані `01 00 00 00`, чинна generation |
 
-## Що вже досліджено — не починайте заново
+Це очікуваний результат, **не зафіксована фізична відповідь**. Досліджений образ оновлення не встановлений як byte-identical до поточної системи конкретної магнітоли.
 
-| Робота | Результат та межі висновку |
+Корисний внесок:
+
+- Оригінальний header **разом із відповідною реалізацією**, бібліотекою або service/IPC contract для саме цієї CE5/MIPSII збірки.
+- Конкретний native export/IPC endpoint, prototype, packing, calling convention та походження device handle.
+- Контракт attach-generation, owner pin, submit/completion, справжніх status/actualLength/bytes, timeout/cancel і callback drain.
+- Новий відповідний артефакт або конкретний контрприклад, який змінює попередній висновок.
+
+Імена application callback на кшталт `query_terminal_sync` не є доказом OEM API. Один header, заглушка або ще одна callback-обгортка не створюють фізичний USB provider.
+
+### Автономність без нової кнопки
+
+Майбутній справжній provider має працювати через підтверджену подію готовності та поточну physical attach generation. Після перевірки ABI, lifetime та окремого погодження hardware-етапу допускається одна QUERY-спроба на generation через того самого owner.
+
+**Зараз цей шлях не активований.** За відсутності provider — нуль submit, без вигаданого ACK, таймера повторів чи непідтвердженого автоматичного USB-виклику. Відновлена програма повинна виконувати свою вже підтверджену штатну поведінку. COMMIT `40/51`, role switch і конкуруючий HCD не входять у поточне відновлення.
+
+## Що вже досліджено
+
+| Робота | Результат та межі |
 | --- | --- |
-| 13 жовтня 2026: наявні CE6 USBware-бібліотеки | Досліджені MSC/ActiveSync/MTP об’єкти не дають потрібного LAN2100 host EP0 provider |
-| 16 жовтня: експорти та реєстрація USBware | Потрібні внутрішні host-функції не підтверджені як доступні експорти дослідженої OEM DLL |
-| 16 жовтня: внутрішній loader | Простежений ActivateDevice-шлях стосується mass-storage; він не доводить завантаження довільного host-клієнта |
-| 16 жовтня: UWD / Phaethon | Наявний логічний канал і OEM status DWORD не є довільним EP0 response / actual length |
-| 16 жовтня: старий TI USBware SDK | Корисний reference іншої версії та платформи; не ABI поточної OEM-збірки |
-| 19 жовтня: resource producer | Статичний ланцюжок descriptor → device context +0x24 → HCD lookup знайдений; це не прикладний USB API й не доказ runtime ownership |
+| 13 жовтня: CE6 USBware-бібліотеки | Досліджені MSC/ActiveSync/MTP об’єкти не дають потрібного LAN2100 host EP0 provider |
+| 16 жовтня: експорти та реєстрація | Потрібні внутрішні host-функції не підтверджені як доступні експорти дослідженої OEM DLL |
+| 16 жовтня: внутрішній loader | Простежений ActivateDevice-шлях стосується mass-storage, не доводить довільний host plugin |
+| 16 жовтня: UWD / Phaethon | Логічний канал та OEM status DWORD не є довільним EP0 response / actual length |
+| 16 жовтня: старий TI SDK | Reference іншої версії/платформи; не ABI поточної OEM-збірки |
+| 19 жовтня: resource producer | Статичний ланцюжок descriptor → context +0x24 → HCD lookup знайдений; це не прикладний USB API і не runtime ownership |
 
-Ці висновки обмежені дослідженими версіями та файлами. Нові байти, інша підтверджена збірка або конкретний контрприклад можуть змінити висновок. Повтор тієї самої перевірки без нового входу не є новим завданням.
+Повторювати ці роботи варто тільки за наявності нового матеріалу або конкретного контрприкладу. Не прирівнюйте stream HANDLE до USB device handle чи статичну адресу до дозволеного runtime-виклику.
 
 ## Як долучитися
 
-1. Відкрийте Issue з конкретним внеском: новий OEM/API матеріал, дефект коду, результат цільової збірки або пропозиція реалізації.
-2. Назвіть вихідну ревізію/commit або SHA файла, очікувану поведінку та що саме зміниться.
-3. Узгодьте вузьку ділянку роботи в Issue, щоб учасники не дублювали одне одного.
-4. Для зміни коду підготуйте Pull Request із реалізацією та перевіркою конкретного ризику.
-5. Розрізняйте результат аналізу, host-тест, цільову MIPSII-компіляцію та фізичний USB-тест.
+1. Оберіть [P0](../../issues/2) або [P1](../../issues/1), або відкрийте Issue з конкретним окремим внеском.
+2. Укажіть ревізію, файли/SHA, походження матеріалу, очікувану поведінку та що саме додаєте.
+3. Узгодьте ділянку роботи в Issue, щоб не дублювати іншого учасника.
+4. Зміни коду подавайте через Pull Request з вузькою перевіркою зміненої поведінки.
+5. Окремо позначайте статичний аналіз, host-тести, MIPSII-компіляцію та фактичний HU-тест.
 
-Для повідомлення про дефект достатньо: **файл/ревізія → умови → фактична поведінка → очікувана поведінка → відтворювач**.
+Формат дефекту: **ревізія → умови → фактична поведінка → очікувана поведінка → відтворювач**.
 
-Для USB-внеску додайте: **версія stack → реальний інтерфейс → походження handle → submit/completion → cancel/drain/lifetime**.
+Основна інтеграція має зберігати один корінь `AutoKitMIPS_U`, один обраний набір source і правдивий журнал. `ReviewOnly` не означає активований код. Старий EXE та синтетичний ACK не є доказом нового USB-тесту.
 
-## Правила інтеграції
-
-- Основний корінь програми: `AutoKitMIPS_U`. Інтеграція має продовжувати наявний код, а не створювати паралельні реалізації тієї самої функції.
-- `ReviewOnly` означає неактивний кандидат. Його наявність у пакеті не означає підключення до активного VCP або HCD.
-- Не прирівнюйте stream HANDLE до USB device handle, OEM status DWORD до USB-відповіді, статичну адресу до підтвердженого runtime ownership.
-- Перший USB milestone — лише ручний одноразовий QUERY. COMMIT `40/51`, role switch, встановлення драйвера та MMIO не входять у цей milestone.
-- Фізичні дії на конкретній магнітолі потребують окремого погодженого плану з її власником.
-- Не публікуйте синтетичний ACK або старий EXE як доказ нового фізичного USB-тесту.
-- Вихідні зміни йдуть через історію Git; повні ZIP потрібні для визначених пакетів, без тимчасових копій `(1)`, `(2)`.
-
-## Базова ревізія та перевірка збірки
-
-Опис стану підготовлено за A_USB_STATUS v62 (доставка A64), B_USB_STATUS v68 і C_USB_STATUS v64, прочитаними **22 жовтня 2026 року**. C64 відхилив попередню fresh A59 через гонку release/withdrawal; пізнішу A64 ще не прийнято незалежно. A повідомляє нові host-тести 46/46 на GCC і Clang, без native/HU запуску. B68 узгодив C62-прийняту NTP-реалізацію SHA `597b5e610ff2642378fc8cacb80d8eb86e7d3231548e73bccb0407d4247fd3a5`. Основний ZIP нижче поки не змінений.
-
-Базовий пакет:
-`AutoKitMIPS_v22.8.114_U_SRCREV35_B44_B46_FULL_SOURCE_ONLY_EXPERIMENTAL_20261022.zip`
-
-SHA-256:
-`6377ee6e19fe25a15ec3dc7c2efb3c8a687a60d71e7532f31779b0ae13f47f0b`
-
-За звітом C63: структура та маніфест пакета перевірені; B44/B46 включені тільки як неактивний ReviewOnly source. Нового MIPSII EXE в цьому пакеті немає. Це ідентифікатор базового матеріалу, а не посилання на опублікований GitHub Release.
-
-Для учасника, який уже має цей пакет і відповідне Windows/eVC4/CE5 MIPSII середовище: наявний `BUILD_EVC4_MIPSII_RELEASE.cmd` запускається з кореня `AutoKitMIPS_U` із правильно вибраним SDK. Передайте `BuildEvidence/EVC4_MIPSII_Release_Last.log`, результат компілятора/лінкера та SHA нового EXE. Наявний `verify_mipsii_output.py` перевіряє очікуваний COFF machine `0x0166`; це перевірка формату, не запуск на HU.
-
-Ця сторінка є точкою координації. Публікація повного вихідного дерева та його ліцензій має бути окремо узгоджена; цей опис не встановлює нову ліцензію для сторонніх компонентів.
+Наразі репозиторій містить координаційну документацію; оригінальний REV26 та повне дерево програми тут не опубліковані. Поширюйте лише матеріали, які маєте право передавати, зі збереженням походження та сторонніх ліцензій. Ця сторінка не встановлює нову ліцензію для стороннього коду.
 
 ---
 
@@ -102,46 +113,41 @@ SHA-256:
 
 ### AutoKitMIPS for LAN2100 — contributors wanted
 
-AutoKitMIPS is an experimental effort targeting a LAN2100 head unit running **Windows CE 5.0 / MIPSII**. The goal is real USB transport followed by integration with a CarPlay adapter.
+Experimental Windows CE 5.0 / MIPSII work toward autonomous USB transport to a Carlinkit adapter and subsequent CarPlay integration.
 
-**Status as recorded on 22 October 2026:** a reviewed full source package exists. A genuine physical USB QUERY and a newly built USB-test executable have not been demonstrated for that package. Host tests and source review are not hardware results.
+**Updated 22 October 2026 from COORD v21, A v68, B v73 and C v70.** The owner reported that the newer experimental project failed to open/build or work reliably, and rejected the manual QUERY button. A65/A66 are withdrawn as active restoration candidates. Their historical source-review results do not establish a working release.
 
-### The contribution that would unblock USB
+### Priority 0: restore the last known working application
 
-We need a build-matched application-facing EP0 interface, or enough authentic implementation material to create one within the existing owner:
+See [issue #2](../../issues/2). We need the authentic REV26 archive with SHA-256:
 
-- **Jungo USBware HOST 3.5.14.64**
-- **Windows CE 5.0 / MIPSII / LGE_AU1350_YN**
-- Studied firmware lineage: **OEM GEN15 production update 8.2.6**
-- Existing native USB owner: **jipod / USBware**
+```text
+7c437e9dc066640174ba5c6a4838a848ccb8b0f14476ea5f9b27315861288bb9
+```
 
-A useful delivery identifies the real exported function, service or IPC endpoint; its prototype and packing; device/context acquisition; attach-generation lifetime; actual submission; terminal USB status, actual length and response bytes; timeout, cancellation and callback drain.
+Historical filename: `AutoKitMIPS_v22.8.114_U_LOCAL_H264_SOFTWARE_EXPERIMENTAL.zip`. Same-named REV24 and REV28 archives are different artifacts, not substitutes.
 
-The initial milestone is one manually requested control IN:
+C70 verified a historical REV26 head-unit log with application startup, MGR1/UWD1, OEM receive/session activity, local H.264 playback (86/86 frames) and clean shutdown. This is historical application/local-file behavior, **not physical Apple EP0, authenticated CarPlay or a new restored-package test**.
+
+The exact original archive remains unavailable for authenticated restoration. No new rollback package has been delivered. The historical user build report does not replace current raw compiler/link evidence or exact package-to-executable provenance.
+
+Useful contributions: recover the original archive; establish source provenance; reproduce the matching eVC4 / CE5 MIPSII build; supply real compiler/link output and a fresh EXE SHA. Preserve original startup and OEM behavior. Do not add manual button ID 3009 or active `AutoKitManualUsbQuery.cpp`. Any fallback must have its own identity and evidence.
+
+### Priority 1: genuine same-owner USB provider
+
+See [issue #1](../../issues/1). Target: **Jungo USBware HOST 3.5.14.64 / Windows CE 5.0 / MIPSII / LGE_AU1350_YN**, studied OEM GEN15 8.2.6 update; existing owner **jipod**. Keep stock UWD1/MGR1 and OEM message registration intact.
+
+Needed: matched application-facing EP0 service or in-owner broker, original header and implementation/library/IPC specification, exact calling convention, real device-handle provenance, attach-generation pin, terminal completion/status/actual length/bytes, timeout/cancel and callback drain.
+
+The future transport must be autonomous, without a manual QUERY UI. Only after a genuine provider is ready, its ABI/lifetime is reviewed and hardware work is separately agreed may it arm one control IN per current physical attach generation:
 `C0 53 00 00 00 00 04 00`.
-A successful result requires real terminal success, exactly four received bytes and `01 00 00 00`. This is an expected result, not an observed result.
 
-The project already has application callback slots. Implementing another placeholder interface does not provide hardware access. The alternative HCD route also requires proven exclusive controller ownership and matching BSP integration; known static register values alone do not establish that.
+Expected success requires real terminal OK, exactly four received bytes `01 00 00 00` and a still-valid generation. No physical success is claimed. With no provider, submit count stays zero; do not create fake ACKs, polling retries or unsupported automatic calls. COMMIT/role switching and a competing HCD are outside the restoration task.
 
-### Work already completed
+### Avoid duplicate research; contribute evidence
 
-Do not restart the existing CE6 library classification, OEM export/loader investigation, UWD/Phaethon command analysis, old TI reference SDK analysis or static resource producer trace without new evidence. The static resource producer was located on 19 October; it is not the missing application EP0 service.
+The existing CE6 library, OEM exports/loader, UWD/Phaethon, older TI SDK and static resource-producer investigations are summarized above. Reopen them with new matched artifacts or concrete counterexamples, not a renamed task. A stream HANDLE is not a USB device handle; OEM command status is not USB response data.
 
-Existing UWD command status is not USB response data. A stream HANDLE is not a USB device handle. Recovery/CE6/ARM components and other USBware versions are not automatically compatible with this target.
+Use Issues for scoped work and Pull Requests for code. Record exact revision and provenance. Distinguish source review, host tests, native compilation and hardware execution. Receiver/NTP/H.264 integration is separate from P0 restoration.
 
-### Latest software progress
-
-A64 has delivered a source-only manual QUERY function and an owner-release correction, reporting 46/46 focused host assertions on each of GCC and Clang. Independent acceptance is pending; this code is not selected in the active VCP. C64 rejected the preceding fresh A59 release/withdrawal race, not the later A64 delivery. B68 reconciled the NTP selection to the already C62-accepted implementation. Receiver outer-owner integration and the physical USB dependency remain open. The full baseline archive is unchanged.
-
-### Other useful contributions
-
-- A reproducible eVC4 / CE5 MIPSII build of the selected source, with the first actual compiler/linker failure or a fresh executable and build log.
-- Focused fixes for ownership withdrawal during drain/release and callback lifetime.
-- Receiver teardown, NTP lifecycle and H.264 integration work in parallel; these are not prerequisites for the first USB QUERY.
-
-Open an Issue with your exact revision, proposed contribution and evidence. Submit focused code changes through a Pull Request. Clearly distinguish static analysis, host tests, target compilation and hardware observations. Preserve source provenance and third-party notices; share only material you are entitled to distribute.
-
-No automatic COMMIT, role switch, driver installation or MMIO is part of the initial QUERY milestone. Hardware work must be separately agreed with the device owner.
-
-The baseline package name and SHA-256 are listed above. This coordination page does not claim the source archive is already a GitHub release or assign a new license to its dependencies.
-
+This repository currently hosts coordination documentation, not the authenticated REV26 archive or a complete published source tree. Share only material you are entitled to distribute, preserving third-party notices and licenses.
