@@ -6,6 +6,8 @@ Project target: LAN2100, Windows CE 5.0, MIPSII, LGE_AU1350_YN, Jungo USBware HO
 
 We need a real, version-matched way to submit a host control transfer and receive its terminal result. The callback names in our sample are application interfaces, **not discovered vendor exports**. Neither an internal `usb_device*` identity nor a DWORD returned by a device command establishes a callable EP0 API or a transfer result. Microsoft CE `USB_HANDLE` / `USB_FUNCS` must not be assumed interchangeable with USBware internal handles.
 
+For newer bounded offline owner-entry findings and their limitations, see [OWNER_ENTRY_EVIDENCE_2026-11-20.md](OWNER_ENTRY_EVIDENCE_2026-11-20.md).
+
 ## First transaction to enable
 
 Control IN setup packet (8 bytes):
