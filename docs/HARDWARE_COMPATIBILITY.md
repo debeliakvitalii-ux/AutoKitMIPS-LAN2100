@@ -1,62 +1,54 @@
-# Hardware compatibility and support boundaries
+# Hardware compatibility — AutoKitMIPS
 
-## Confirmed development target
+## Primary target
 
 | Item | Target |
 |---|---|
-| Automotive head unit | Kia LAN2100 |
-| Platform/board family | LGE_AU1350_YN |
+| Head unit | Kia LAN2100 |
+| Platform | LGE_AU1350_YN |
 | Operating system | Windows CE 5.0 |
-| CPU/ABI | MIPSII, 32-bit |
+| CPU / ABI | MIPSII, 32-bit |
 | USB host stack | Jungo USBware HOST 3.5.14.64 |
-| USB ownership path | Existing stock USBware/JIPOD owner |
+| USB owner | Existing stock USBware/JIPOD owner |
+| Peripheral | Compatible AutoKit USB adapter |
 
-This identifies the primary engineering target. It does not mean the complete software currently runs on the head unit.
+This is the first target for development. It does not mean the complete AutoKit adapter connection is already working on the physical head unit.
 
-## Intended peripheral classes
+## What AutoKitMIPS connects
 
-The project intends to investigate and, where supported, connect:
-- compatible external USB CarPlay adapters/dongles;
-- compatible Android Auto projection adapters/devices;
-- USB devices exposing a documented and supported transport/network interface;
-- the head unit's built-in display, audio path, touchscreen and physical controls.
+The subject of this project is the USB AutoKit adapter and the software path required for the MIPS head unit to communicate with it.
 
-Exact adapter models, firmware versions, USB descriptors, protocol modes and licensing/authorization requirements must be recorded before compatibility can be claimed. A product advertised as "wireless CarPlay/Android Auto" is not automatically compatible with this head unit or software.
+Compatibility must be checked for the exact adapter model and firmware, including its USB descriptors, protocol mode and required session/authentication behavior. A generic "CarPlay" or "Android Auto" product description is not sufficient evidence.
 
-## Display and input variations
+## What is outside this project's scope
 
-The application is expected to accommodate different head-unit display and input arrangements through model-specific configuration, not assumptions:
-- display resolution and orientation (for example, nominal 800×480 only when confirmed for the target);
-- framebuffer/pixel format and available graphics APIs;
-- capacitive or resistive touch, including calibration and coordinate mapping;
-- physical front-panel buttons and steering-wheel controls;
-- OEM-specific key events, GPIO or accessory interfaces, only where documented and safely accessible.
+The following are existing head-unit functions and are not developed, replaced, remapped or configured by AutoKitMIPS:
+- factory touchscreen or resistive touch panel;
+- factory physical buttons and steering-wheel controls;
+- the head unit's original user interface and button handling.
 
-No universal pinout, button mapping, touch protocol or video interface is implied.
+AutoKitMIPS is intended to work with the existing multimedia facilities of the head unit. Its scope is the AutoKit adapter connection and the software/data path from that adapter into the existing system.
 
-## Potential future ports — not yet supported
+## Future MIPS head-unit ports
 
-Other Kia/Hyundai head units, other LAN-series devices, other Windows CE versions, ARM or other MIPS variants, and devices using Microsoft USB stack or a different Jungo release may be considered only as separate ports.
+Other MIPS-based automotive head units may be considered, but each is a separate compatibility target. Required evidence includes:
+1. exact CPU architecture and ABI;
+2. Windows CE version and OEM build;
+3. USB host stack vendor and exact version;
+4. supported application/service entry into the real USB device owner;
+5. adapter USB/protocol compatibility;
+6. a target build and physical hardware validation.
 
-A port requires evidence for:
-1. CPU architecture, ABI, compiler and OS version;
-2. board/BSP and OEM service interfaces;
-3. USB host stack and device ownership model;
-4. display and audio interfaces;
-5. touch and button input paths;
-6. real hardware validation.
+A shared CPU family or similar connector does not establish compatibility. Other operating systems, CPU families or USB stacks are not automatically supported.
 
-Do not label a model compatible based only on vehicle make, connector shape, OS family or similar product name.
+## How to report a compatible setup
 
-## How to report a device
+Please open an issue and provide information you are allowed to share:
+- head-unit manufacturer and exact model/revision;
+- CPU/OS version, if known;
+- USB host stack and version, if known;
+- exact AutoKit adapter model and firmware;
+- USB enumeration details or sanitized logs;
+- steps performed and observed result.
 
-Please open an issue and include only information you are permitted to share:
-- manufacturer, head-unit model and hardware revision;
-- OS build/version and CPU architecture, if known;
-- USB host stack/vendor/version, if known;
-- adapter model and firmware version;
-- display resolution and touch type;
-- what works, what fails, and exact reproduction steps;
-- logs stripped of serial numbers, personal data and secrets.
-
-Do not upload proprietary firmware, confidential SDKs, credentials, certificates or raw memory dumps.
+Do not upload confidential OEM firmware, SDKs, memory dumps, credentials, certificates or personal data.
