@@ -26,3 +26,19 @@ AutoKitMIPS aims to connect Carlinkit / CarPlay to the LAN2100 head unit running
 We need a platform-matched **USBware HOST EP0 provider**. The published C++98 sample provides an application-side QUERY boundary and reproducible host tests; it does not implement the native USB transport. See the [technical request](docs/USB_HELP.md), the [newer owner-entry evidence note](docs/OWNER_ENTRY_EVIDENCE_2026-11-20.md), and the [sample](examples/usb-query-boundary/). Please contribute relevant API documentation, a minimal integration example, or a precise correction through [issue #1](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues/1).
 
 Please identify the source, platform/version and redistribution permission of shared materials. Do not post confidential SDKs, credentials or firmware dumps.
+
+
+## Development handoff and next steps
+
+The current engineering status, accepted review boundaries and next implementation gates are consolidated here:
+
+- [Development status (2026-11-23)](docs/DEVELOPMENT_STATUS_2026-11-23.md)
+- [USBware/JIPOD owner findings](docs/USBWARE_OWNER_FINDINGS_2026-11-23.md)
+- [Implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md)
+- [Architecture and lifetime contract](docs/ARCHITECTURE_AND_LIFETIME_CONTRACT.md)
+- [Validation matrix and release gates](docs/VALIDATION_MATRIX.md)
+- [Contributor evidence template](docs/CONTRIBUTOR_EVIDENCE_TEMPLATE.md)
+- [Engineering decision log](docs/DECISION_LOG.md)
+- [Repository workflow](docs/WORKING_WITH_REPOSITORY.md)
+
+These documents describe the current blocker accurately: the native USBware EP0 provider and Production LAN2100 transport are not yet proven or implemented.
