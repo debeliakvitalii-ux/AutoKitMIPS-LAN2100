@@ -2,30 +2,28 @@
 
 ## Purpose
 
-AutoKitMIPS is an open engineering project to develop a software platform that can bring modern phone-projection connectivity to selected legacy automotive multimedia head units running Windows CE.
+AutoKitMIPS is software intended to connect a compatible **AutoKit USB adapter** to an automotive head unit built around a MIPS processor and running Windows CE. Its job is to establish and maintain the real USB connection to the adapter, exchange the required protocol data, and deliver the adapter's CarPlay or Android Auto session data to the head unit's existing multimedia software.
 
-The first target is the Kia LAN2100 / LGE_AU1350_YN head unit. The long-term goal is to connect compatible external CarPlay or Android Auto adapters and bridge their sessions to the head unit's display, audio output and driver controls.
-
-This is a development project, not a finished product. The repository must distinguish intended features from implemented and hardware-verified features.
+This project is specifically about integrating the AutoKit adapter with MIPS-based head units. It is not a project for developing the head unit's touchscreen, resistive touch panel, physical buttons, steering-wheel controls or factory user interface. Those are existing head-unit functions and remain outside AutoKitMIPS scope.
 
 ## Why this project exists
 
-Many older factory head units still provide useful vehicle integration, physical controls and an installed display, but do not offer modern phone projection. Replacing the whole head unit can mean losing factory integration. AutoKitMIPS explores whether a compatible external adapter and custom software can add that functionality while retaining the original unit.
+Older factory head units may have capable displays, audio systems and factory controls but lack a supported way to connect a modern AutoKit projection adapter. AutoKitMIPS explores how to add that adapter connection in software while retaining the original head unit and its existing user controls.
 
-This is a technical goal, not a guarantee that every factory head unit or adapter can be supported.
+The aim is to make a compatible AutoKit adapter communicate with the legacy MIPS/Windows CE platform; it is not a promise that every adapter or every MIPS head unit will work.
 
-## Planned software layers
+## Project scope
 
-- Application and user interface: startup, connection state, settings and diagnostics.
-- Hardware adaptation: model-specific display, audio, touch, buttons and OEM service integration.
-- USB host transport: safe communication with the physical adapter through the platform's existing USB stack.
-- Protocol/session layer: supported CarPlay/iAP2 or Android Auto/AAP session handling, subject to device and licensing requirements.
-- Network bridge: USB networking, IP configuration and required service discovery.
-- Media bridge: audio/video transport and synchronization.
-- Input bridge: touch coordinates, resistive touch, physical keys and steering-wheel controls where accessible.
-- Configuration: model-specific display geometry, key mappings and diagnostics.
+- Detect and identify the connected AutoKit USB adapter.
+- Establish a real USB host transport through the head unit's existing OEM USB stack and device owner.
+- Manage adapter attach/detach, ownership, generations and transfer lifetimes safely.
+- Exchange the protocol messages required by the adapter.
+- Establish the relevant CarPlay or Android Auto session, subject to the adapter model and applicable licensing/authentication requirements.
+- Carry the required network traffic between the adapter and phone session.
+- Deliver audio/video or other session data to the head unit's existing multimedia components, where their interfaces permit it.
+- Provide connection status, diagnostics and adapter-related configuration.
 
-These are planned layers. A successful low-level USB request alone does not mean a complete phone-projection session works.
+The factory display, touchscreen, buttons and steering-wheel controls are not being implemented or replaced by this project. AutoKitMIPS is intended to use the head unit's existing system facilities.
 
 ## Initial hardware target
 
@@ -35,28 +33,34 @@ These are planned layers. A successful low-level USB request alone does not mean
 - Jungo USBware HOST 3.5.14.64
 - Existing stock USBware/JIPOD ownership path
 
-Other head units and USB stacks are future port candidates only. See [HARDWARE_COMPATIBILITY.md](HARDWARE_COMPATIBILITY.md).
+Other MIPS-based head units may be considered as separate ports after their CPU/ABI, Windows CE version, OEM USB stack, device ownership path and multimedia interfaces are verified. Compatibility must not be inferred from the MIPS label alone.
+
+See [HARDWARE_COMPATIBILITY.md](HARDWARE_COMPATIBILITY.md).
 
 ## Current status
 
-The native USB transport through the real stock owner is not yet proven or implemented as a working target path. There is no verified CE5/MIPSII release build and no complete CarPlay/Android Auto hardware session. Public host-testable components cover limited application-side contracts only.
+The native USB transport through the real stock USBware/JIPOD owner is not yet proven or implemented as a working target path. There is no verified CE5/MIPSII release build and no complete AutoKit adapter session running on the physical LAN2100.
 
-The immediate engineering dependency is a documented, supported application/service entry into the same live stock USB owner, followed by a verified native EP0 transfer and safe completion, cancellation, drain and detach behavior.
+The immediate dependency is a documented, supported application/service entry into the same live stock USB owner, followed by a verified native USB transfer and safe completion, cancellation, drain and detach behavior.
+
+See the [development status](DEVELOPMENT_STATUS_2026-11-23.md), [architecture and lifetime contract](ARCHITECTURE_AND_LIFETIME_CONTRACT.md), [USB integration help request](USB_HELP.md), and [implementation roadmap](IMPLEMENTATION_ROADMAP.md).
 
 ## Who can help
 
-Contributors with experience in Windows CE, Platform Builder/eVC4, MIPS, Jungo USBware, USB host stacks, automotive BSPs, iAP2, Android Auto/AAP, USB networking, audio/video pipelines, touchscreens and embedded UI are welcome.
+We welcome contributors experienced in:
+- Windows CE 5.0, Platform Builder and eVC4;
+- MIPS/MIPSII and embedded C/C++;
+- Jungo USBware and USB host stacks;
+- automotive OEM BSP and device-owner integration;
+- AutoKit adapter protocols and CarPlay/Android Auto session integration;
+- USB networking/NCM and embedded network stacks;
+- audio/video data paths on legacy Windows CE head units;
+- testing on compatible MIPS head units and AutoKit adapters.
 
-Useful contributions include:
-- exact platform-matched SDK/API documentation with redistribution permission;
-- reproducible hardware identification and compatibility reports;
-- minimal, reviewable source patches;
-- target build fixes and build instructions;
-- display/audio/input integration knowledge;
-- independent review and real-hardware test evidence.
+Useful contributions include platform-matched API evidence, reproducible adapter identification, minimal source patches, target build fixes, protocol documentation that may legally be shared, and real-hardware test evidence.
 
 Start with [CONTRIBUTING.md](../CONTRIBUTING.md), the [implementation roadmap](IMPLEMENTATION_ROADMAP.md), and [open issues](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues).
 
 ## Safety and licensing
 
-Do not upload confidential OEM SDKs, firmware images, memory dumps, keys, certificates, credentials or personal data. Public repository visibility does not grant redistribution rights. Check the repository's licensing status before reusing or publishing third-party code.
+Do not upload confidential OEM SDKs, firmware images, memory dumps, keys, certificates, credentials or personal data. Public repository visibility does not grant redistribution rights. Check licensing and provenance before publishing third-party code or documentation.
