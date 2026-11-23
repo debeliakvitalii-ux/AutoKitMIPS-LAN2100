@@ -1,61 +1,77 @@
 # AutoKitMIPS — підключення USB-адаптера AutoKit до MIPS-магнітол
 
-**AutoKitMIPS** — програмне забезпечення для підключення сумісного USB-адаптера AutoKit до автомобільної магнітоли з процесором MIPS та Windows CE. Програма має забезпечити реальний зв'язок між адаптером і штатною системою магнітоли для передавання даних CarPlay або Android Auto.
+**AutoKitMIPS** — програма для підключення сумісного USB-адаптера AutoKit до автомобільної магнітоли з процесором MIPS та Windows CE. Її призначення — забезпечити програмний шлях між адаптером і наявними компонентами магнітоли для обміну даними та роботи сумісної CarPlay або Android Auto сесії.
 
-Сфера проєкту — USB-підключення адаптера, протокол обміну, мережева сесія та передавання медіаданих до наявних компонентів магнітоли. Штатний сенсорний екран, фізичні кнопки та керування магнітолою не розробляються й не змінюються AutoKitMIPS.
+Сфера проєкту обмежена самою програмою AutoKitMIPS і її взаємодією з AutoKit USB-адаптером: USB transport через наявний OEM USB host stack/owner, протокол адаптера, сесія, мережевий обмін і передавання аудіо/відеоданих до наявних мультимедійних програмних компонентів магнітоли. Фабричний інтерфейс магнітоли та її органи керування не змінюються.
 
-> **Поточна ціль розробки:** Kia LAN2100 / платформа LGE_AU1350_YN, Windows CE 5.0, MIPSII, Jungo USBware HOST 3.5.14.64. Це не універсальна програма для всіх магнітол і поки що не готовий до встановлення продукт.
+> **Поточна ціль розробки:** Kia LAN2100 / платформа LGE_AU1350_YN, Windows CE 5.0, MIPSII, Jungo USBware HOST 3.5.14.64. Це цільова платформа, а не підтвердження повної сумісності чи готовий до встановлення продукт.
 
 ## Документація проєкту
 
 - [Повний огляд проєкту та його модулів](docs/PROJECT_OVERVIEW.md)
 - [Апаратна сумісність і межі підтримки](docs/HARDWARE_COMPATIBILITY.md)
 
-## Що ми хочемо створити
+## Що має робити AutoKitMIPS
 
-- Запуск AutoKitMIPS на сумісній автомобільній магнітолі Windows CE.
-- Підключення сумісного зовнішнього USB-модуля/адаптера CarPlay або Android Auto.
-- Керування життєвим циклом USB-пристрою: підключення, від'єднання, повторне підключення та безпечне завершення операцій.
-- Обмін протокольними повідомленнями з адаптером і телефоном.
-- Передавання мережевих даних, необхідних для телефонної сесії.
-- Виведення відео на екран магнітоли та передавання аудіо — після реалізації відповідних протокольних і апаратних шарів.
-- Передавання потоків даних адаптера до наявних мультимедійних компонентів магнітоли. Штатні сенсор, кнопки та інші органи керування залишаються поза сферою проєкту.
+- Запускатися як окрема програма на сумісній автомобільній магнітолі Windows CE.
+- Виявляти сумісний USB-адаптер AutoKit і взаємодіяти з ним через наявний USB host stack магнітоли.
+- Безпечно обробляти підключення, від'єднання, повторне підключення та завершення USB операцій.
+- Обмінюватися з адаптером потрібними протокольними повідомленнями.
+- Підтримувати сумісну CarPlay або Android Auto сесію, якщо це підтверджено для конкретної моделі адаптера.
+- Передавати потрібний мережевий трафік і потоки аудіо/відеоданих до наявних мультимедійних програмних компонентів магнітоли, якщо їхні інтерфейси це дозволяють.
 
-Це цільова функціональність, а не перелік уже готових функцій. Статус кожного шару описується в [дорожній карті](docs/IMPLEMENTATION_ROADMAP.md) та [матриці перевірки](docs/VALIDATION_MATRIX.md).
+Це цільова функціональність, а не перелік готових можливостей. Статус кожного шару описується в [дорожній карті](docs/IMPLEMENTATION_ROADMAP.md) та [матриці перевірки](docs/VALIDATION_MATRIX.md).
 
-## Для яких магнітол
+## Цільова апаратна платформа
 
-### Підтверджена первинна платформа
+### Первинна ціль
 
 - **Kia LAN2100 / LGE_AU1350_YN**
 - Windows CE 5.0
 - MIPSII, 32-bit
 - Jungo USBware HOST 3.5.14.64
-- штатний USB host stack та його JIPOD owner
+- наявний штатний USB host stack та його JIPOD owner
+- сумісний USB-адаптер AutoKit
 
-### Можливі майбутні порти
+Це перша платформа для розробки. Її перелік не означає, що повний зв'язок із AutoKit адаптером уже працює на фізичній магнітолі.
 
-Архітектурно проєкт може бути адаптований до інших головних пристроїв, якщо вони мають сумісну або документовану платформу: Windows CE, відповідну CPU/ABI, доступний SDK/BSP та сумісний USB host stack.
+### Можливі майбутні MIPS-порти
 
-**Сумісність з іншими Kia/Hyundai, іншими поколіннями LAN, Windows CE-пристроями чи іншими USB-стеками не підтверджена.** Однакова назва ОС або схожий роз'єм не означає сумісності. Для кожної моделі потрібне окреме дослідження й тестування.
+Інші MIPS-магнітоли можуть розглядатися окремо після перевірки CPU/ABI, версії Windows CE, OEM USB stack, доступу до реального USB device owner, адаптера та мультимедійних програмних інтерфейсів.
+
+**Сумісність з іншими моделями Kia/Hyundai, іншими поколіннями LAN, Windows CE-пристроями чи іншими USB-стеками не підтверджена.** Однакова назва ОС або CPU не доводить сумісності.
 
 Детальніше: [апаратна сумісність і межі підтримки](docs/HARDWARE_COMPATIBILITY.md).
 
-## З яких частин складається програма
+## Програмні шари
 
-1. **Application / UI** — запуск програми, головний екран, налаштування, вибір режимів та індикація стану.
-2. **MIPS/OEM adaptation layer** — сумісність із конкретною MIPS-платформою, Windows CE та OEM USB stack/owner.
-3. **USB host transport** — реальне керування USB-пристроєм через штатний OEM/Jungo stack.
-4. **Protocol/session layer** — встановлення та підтримка сесії з сумісним адаптером і телефоном (зокрема iAP2 або Android Auto/AAP, якщо це відповідає пристрою та ліцензійним вимогам).
-5. **Network bridge** — USB networking, IP-конфігурація та необхідні мережеві служби.
-6. **Media/data bridge** — передавання потоків даних, аудіо та відео до наявних мультимедійних компонентів магнітоли.
-7. **Configuration and diagnostics** — параметри адаптера, стан з'єднання, журнали та відновлення після помилок.
+1. **AutoKitMIPS application** — запуск програми, її власний екран стану/діагностики та налаштування підключення адаптера.
+2. **MIPS / Windows CE adaptation** — сумісність програми з конкретною MIPS-платформою, CE та OEM USB stack.
+3. **USB transport** — реальне звернення до адаптера через наявний OEM/Jungo USB owner.
+4. **Adapter protocol and session** — протокольний обмін і встановлення сумісної CarPlay або Android Auto сесії.
+5. **Networking** — передавання мережевих даних, потрібних сесії адаптера та телефону.
+6. **Audio/video data transport** — передавання медіапотоків до наявних мультимедійних програмних компонентів магнітоли через підтверджені інтерфейси.
+7. **Adapter diagnostics** — стан USB-підключення й сесії, журнали та відновлення після помилок.
+
+Власний екран AutoKitMIPS для діагностики та налаштувань не змінює фабричний UI магнітоли.
+
+## Що не входить до проєкту
+
+AutoKitMIPS не розробляє, не замінює, не налаштовує та не інтегрує:
+- touchscreen або resistive touch panel;
+- фізичні кнопки магнітоли чи кнопки керма;
+- mapping або конфігурацію кнопок;
+- зовнішні дисплеї та зовнішні display/video interfaces;
+- aftermarket interface boxes;
+- фабричний інтерфейс, меню чи систему керування магнітоли.
+
+Проєкт використовує лише наявні в магнітолі мультимедійні програмні компоненти, якщо їхні інтерфейси сумісні та підтверджені.
 
 ## Поточний стан — чесно
 
-Проєкт перебуває в активній розробці. У репозиторії є вихідні компоненти та host-тести окремих меж програми, але **ще немає підтвердженого повного native USB transport для LAN2100, готової CE5/MIPSII збірки чи робочої CarPlay/Android Auto сесії на магнітолі**.
+Проєкт перебуває в активній розробці. У репозиторії є вихідні компоненти та host-тести окремих програмних меж, але **ще немає підтвердженого повного native USB transport для LAN2100, готової CE5/MIPSII збірки чи робочої CarPlay/Android Auto сесії на магнітолі**.
 
-Ключовий незакритий етап — безпечний виклик через чинного USBware/JIPOD owner і підтвердження справжньої native USB EP0 передачі. Не можна замінювати це вигаданим IOCTL, підробленою відповіддю або другим USB host controller.
+Ключова невирішена залежність — підтверджений доступ програми до чинного USBware/JIPOD owner і реальна native USB EP0 передача з коректним завершенням та життєвим циклом. Її не можна замінювати вигаданим IOCTL, синтетичною відповіддю або другим USB host controller.
 
 - [Огляд стану розробки](docs/DEVELOPMENT_STATUS_2026-11-23.md)
 - [Архітектура та правила володіння ресурсами](docs/ARCHITECTURE_AND_LIFETIME_CONTRACT.md)
@@ -65,24 +81,23 @@
 ## Кого ми шукаємо
 
 Будемо раді допомозі від:
-
 - Windows CE 5.0 / Platform Builder / eVC4 розробників;
 - MIPS/MIPSII та embedded C/C++ інженерів;
-- спеціалістів із Jungo USBware, USB host controller, USB protocol та USB device stacks;
-- розробників автомобільних мультимедійних систем і OEM BSP;
-- інженерів iAP2, Android Auto/AAP, USB networking/NCM;
-- спеціалістів із CarPlay/Android Auto протоколів, USB networking/NCM та аудіо/відео потоків;
-- тестувальників, які мають сумісну магнітолу або можуть допомогти з відтворюваними тестами.
+- спеціалістів із Jungo USBware, USB host stack та USB device protocols;
+- інженерів OEM BSP, USB transport і життєвого циклу пристроїв;
+- розробників протоколів AutoKit, iAP2 або Android Auto/AAP;
+- спеціалістів із USB networking/NCM та аудіо/відео data transport;
+- тестувальників із сумісною MIPS-магнітолою та AutoKit USB-адаптером.
 
-Не обов'язково знати весь проєкт. Навіть перевірена інформація про конкретну MIPS-магнітолу, OEM SDK, USB owner API або сумісність AutoKit-адаптера може допомогти.
+Корисними будуть перевірені відомості про конкретну MIPS-платформу, OEM USB owner API, модель AutoKit адаптера або відтворювані результати тестів.
 
 ## Як долучитися
 
 1. Прочитайте [CONTRIBUTING.md](CONTRIBUTING.md).
 2. Перегляньте [відкриті Issues](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues).
 3. Для USBware/JIPOD інтеграції додайте технічну відповідь у [Issue #1](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues/1).
-4. Для нового модуля, виправлення чи документації відкрийте окремий Pull Request із точним описом перевірки.
-5. Вкажіть модель обладнання, версію ОС/стека, джерело інформації та що саме було реально протестовано.
+4. Для нового програмного модуля, виправлення чи документації відкрийте окремий Pull Request із точним описом перевірки.
+5. Вкажіть модель AutoKit адаптера, модель магнітоли, версії ОС/USB stack, джерела інформації та що саме було реально протестовано.
 
 ## Безпека та правові межі
 
@@ -90,9 +105,10 @@
 
 ## English
 
-AutoKitMIPS is software intended to connect a compatible AutoKit USB adapter to MIPS-based automotive head units running Windows CE. The first target is Kia LAN2100 / LGE_AU1350_YN (Windows CE 5.0, MIPSII, Jungo USBware HOST 3.5.14.64).
+AutoKitMIPS is software for connecting a compatible AutoKit USB adapter to a MIPS-based automotive head unit running Windows CE. Its scope is the application, the adapter's real USB transport through the existing OEM USB owner, adapter protocol/session handling, networking, and audio/video data delivery to the head unit's existing multimedia software components.
 
-The scope is adapter connectivity, USB transport, session protocols, networking and delivery of media data to the head unit's existing multimedia components. Factory touchscreen and buttons are outside this project. These are project goals, **not claims of completed functionality**. No working native LAN2100 USB transport, target CE5/MIPSII release build, or complete CarPlay/Android Auto session has been verified yet.
+The project excludes factory touchscreens and resistive touch panels, physical and steering-wheel buttons, button mapping, external displays/display interfaces, aftermarket interface boxes, and modifications to the factory head-unit UI. AutoKitMIPS may provide its own adapter status and configuration screen.
 
-We welcome embedded Windows CE, MIPS, USB/Jungo, automotive BSP, networking, media-pipeline and hardware-testing contributors. Start with [the hardware compatibility note](docs/HARDWARE_COMPATIBILITY.md), [contributor guide](CONTRIBUTING.md), and [open issues](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues).
+The first development target is Kia LAN2100 / LGE_AU1350_YN (Windows CE 5.0, MIPSII, Jungo USBware HOST 3.5.14.64). These are project goals, **not claims of completed functionality**. No working native LAN2100 USB transport, target CE5/MIPSII release build, or complete CarPlay/Android Auto session has been verified yet.
 
+We welcome contributors experienced in Windows CE, MIPS, Jungo USB, AutoKit adapter protocols, networking/NCM, and audio/video data transport. Start with [the hardware compatibility note](docs/HARDWARE_COMPATIBILITY.md), [contributor guide](CONTRIBUTING.md), and [open issues](https://github.com/debeliakvitalii-ux/AutoKitMIPS-LAN2100/issues).
